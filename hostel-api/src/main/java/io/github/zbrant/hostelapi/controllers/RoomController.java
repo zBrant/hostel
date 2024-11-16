@@ -7,6 +7,8 @@ import io.github.zbrant.hostelapi.services.HostelApiFacade;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,8 +17,16 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -67,4 +77,31 @@ public class RoomController {
     PagedModel<EntityModel<RoomModel>> roomModels = pagedResourcesAssembler.toModel(rooms, roomModelAssembler);
     return ResponseEntity.ok(roomModels);
   }
+
+  @PostMapping("/{id}/photo")
+  public ResponseEntity<String> uploadRoomPhoto(@PathVariable("id") Long roomId,
+                                                @RequestParam("photo") MultipartFile photo) {
+    try {
+      RoomModel room = facadeService.findRoomById(roomId);
+      if (Objects.isNull(room)) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Room not found.");
+
+      String photoPath = facadeService.saveRoomPhoto(photo);
+
+      room.setPhotoPath(photoPath);
+      facadeService.updateRoom(room);
+
+      return ResponseEntity.status(HttpStatus.OK).body("Photo uploaded successfully.");
+    } catch (IOException e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading the photo.");
+    }
+  }
+
+  @GetMapping("/photo/{photoPath:.+}")
+  public ResponseEntity<Resource> getPhoto(@PathVariable String photoPath) {
+      Resource resource = facadeService.getRoomPhoto(photoPath);
+      return ResponseEntity.ok()
+          .contentType(MediaType.IMAGE_JPEG)
+          .body(resource);
+  }
+
 }

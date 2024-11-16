@@ -32,5 +32,9 @@ public class RoomModel implements Serializable {
   @OneToOne
   @JoinColumn(name = "address_id", nullable = false)
   private AddressModel address;
+
+  @Column
+  private String photoPath;
+
 }
 

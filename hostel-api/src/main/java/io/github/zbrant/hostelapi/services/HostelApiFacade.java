@@ -2,13 +2,16 @@ package io.github.zbrant.hostelapi.services;
 
 import io.github.zbrant.hostelapi.models.*;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.Objects;
 
 @Service
@@ -48,6 +51,14 @@ public class HostelApiFacade {
     if (Objects.isNull(address.getId())) addressService.save(address);
 
     return roomService.save(room);
+  }
+
+  public String saveRoomPhoto(MultipartFile photo)  throws IOException {
+    return roomService.savePhoto(photo);
+  }
+
+  public Resource getRoomPhoto(String path) {
+    return roomService.getPhoto(path);
   }
 
   public UserModel saveUser(UserModel user) {
