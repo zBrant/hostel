@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +27,9 @@ public class HostelApiFacade {
     UserModel user = userService.findById(userId);
     validateMaxRoomsByUser(user);
 
+    AddressModel address = findOrSaveAddress(room.getAddress());
+    room.setAddress(address);
+
     RoomModel savedRoom = roomService.save(room);
 
     RoomUserModel roomUser = new RoomUserModel();
@@ -46,27 +48,41 @@ public class HostelApiFacade {
   }
 
   public RoomModel updateRoom(RoomModel room) {
-    AddressModel address = room.getAddress();
+    AddressModel address = getAddress(room);
 
-    if (Objects.isNull(address.getId())) addressService.save(address);
+    if (Objects.isNull(address.getId()))
+      address = addressService.save(address);
 
-    return roomService.save(room);
+    room.setAddress(address);
+
+    return roomService.update(room);
+  }
+
+  private AddressModel getAddress(RoomModel room) {
+    return addressService.findById(room.getAddress().getId());
+  }
+
+  public AddressModel findOrSaveAddress(AddressModel address) {
+    if (Objects.isNull(address.getId())) return addressService.save(address);
+
+    return addressService.findById(address.getId());
   }
 
   public String saveRoomPhoto(MultipartFile photo)  throws IOException {
     return roomService.savePhoto(photo);
   }
 
-  public Resource getRoomPhoto(String path) {
-    return roomService.getPhoto(path);
+  public Resource getRoomPhoto(Long roomId) {
+    var photoPath = roomService.findById(roomId).getPhotoPath();
+    return roomService.getPhoto(photoPath);
   }
 
   public UserModel saveUser(UserModel user) {
     return userService.save(user);
   }
 
-  public Page<RoomModel> findAllRooms(Pageable pageable, String country, String city) {
-    return roomService.findAll(pageable, country, city);
+  public Page<RoomModel> findAllRoomsByCountryAndCity(Pageable pageable, String country, String city) {
+    return roomService.findAllByCountryAndCity(pageable, country, city);
   }
 
   public RoomModel findRoomById(Long id) {
@@ -74,6 +90,12 @@ public class HostelApiFacade {
   }
 
   public void deleteRoom(RoomModel room) {
+    var roomUser = roomUserService.findByRoom(room);
+    var user = userService.findById(roomUser.getUser().getId());
+
+    user.getRoomUsers().remove(roomUser);
+    userService.save(user);
+
     roomService.delete(room);
   }
 

@@ -1,5 +1,6 @@
 package io.github.zbrant.hostelapi.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,12 +18,15 @@ public class RoomUserModel implements Serializable {
   @Column(name = "room_user_id")
   private Long id;
 
-  @ManyToOne
-  @JoinColumn(name = "user_id", nullable = false)
+  @ManyToOne(fetch = FetchType.EAGER, targetEntity = UserModel.class)
+  @JoinColumn(name = "user_id")
+  @JsonBackReference
   private UserModel user;
 
-  @ManyToOne
-  @JoinColumn(name = "room_id", nullable = false)
+  @ManyToOne(fetch = FetchType.EAGER, targetEntity = RoomModel.class)
+  @JoinColumn(name = "room_id")
+  @JsonBackReference
   private RoomModel room;
+
 }
 

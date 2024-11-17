@@ -4,10 +4,10 @@ import io.github.zbrant.hostelapi.dtos.RoomDTO;
 import io.github.zbrant.hostelapi.models.RoomModel;
 import io.github.zbrant.hostelapi.models.RoomRepresentationModelAssembler;
 import io.github.zbrant.hostelapi.services.HostelApiFacade;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,9 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Objects;
 
 @RestController
@@ -49,9 +46,13 @@ public class RoomController {
   @PutMapping("/{id}")
   public ResponseEntity<EntityModel<RoomModel>> updateRoom(@PathVariable Long id, @RequestBody @Valid RoomDTO roomDto) {
     RoomModel room = facadeService.findRoomById(id);
-    BeanUtils.copyProperties(roomDto, room);
-    EntityModel<RoomModel> roomModel = roomModelAssembler.toModel(facadeService.updateRoom(room));
-    return ResponseEntity.ok(roomModel);
+
+    var roomModel = new RoomModel();
+    BeanUtils.copyProperties(roomDto, roomModel);
+    roomModel.setId(room.getId());
+
+    EntityModel<RoomModel> roomUpdated = roomModelAssembler.toModel(facadeService.updateRoom(roomModel));
+    return ResponseEntity.ok(roomUpdated);
   }
 
   @DeleteMapping("/{id}")
@@ -73,11 +74,12 @@ public class RoomController {
       @RequestParam(required = false) String country,
       @RequestParam(required = false) String city) {
 
-    Page<RoomModel> rooms = facadeService.findAllRooms(pageable, country, city);
+    Page<RoomModel> rooms = facadeService.findAllRoomsByCountryAndCity(pageable, country, city);
     PagedModel<EntityModel<RoomModel>> roomModels = pagedResourcesAssembler.toModel(rooms, roomModelAssembler);
     return ResponseEntity.ok(roomModels);
   }
 
+  @Transactional
   @PostMapping("/{id}/photo")
   public ResponseEntity<String> uploadRoomPhoto(@PathVariable("id") Long roomId,
                                                 @RequestParam("photo") MultipartFile photo) {
@@ -96,9 +98,9 @@ public class RoomController {
     }
   }
 
-  @GetMapping("/photo/{photoPath:.+}")
-  public ResponseEntity<Resource> getPhoto(@PathVariable String photoPath) {
-      Resource resource = facadeService.getRoomPhoto(photoPath);
+  @GetMapping("/photo/{roomId}")
+  public ResponseEntity<Resource> getPhoto(@PathVariable Long roomId) {
+      Resource resource = facadeService.getRoomPhoto(roomId);
       return ResponseEntity.ok()
           .contentType(MediaType.IMAGE_JPEG)
           .body(resource);

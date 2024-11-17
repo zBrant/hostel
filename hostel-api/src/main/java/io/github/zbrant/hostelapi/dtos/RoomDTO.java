@@ -1,5 +1,6 @@
 package io.github.zbrant.hostelapi.dtos;
 
+import io.github.zbrant.hostelapi.models.AddressModel;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -29,6 +30,9 @@ public class RoomDTO {
   private Boolean rented;
 
   @NotNull
-  private Long userId;  // Relaciona com o User
+  private Long userId;
+
+  @NotNull
+  private AddressModel address;
 }
 

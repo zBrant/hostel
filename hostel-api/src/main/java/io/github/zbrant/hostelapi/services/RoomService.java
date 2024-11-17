@@ -2,7 +2,7 @@ package io.github.zbrant.hostelapi.services;
 
 import io.github.zbrant.hostelapi.models.RoomModel;
 import io.github.zbrant.hostelapi.repositories.RoomRepository;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -20,11 +20,15 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
 public class RoomService {
 
   private final RoomRepository roomRepository;
-  private static final String UPLOADDIR = "/uploads/rooms/";
+  private final String uploadDir;
+
+  public RoomService(RoomRepository roomRepository, @Value("${file.upload-dir}") String fileUploadDir) {
+    this.roomRepository = roomRepository;
+    this.uploadDir = fileUploadDir;
+  }
 
   public RoomModel save(RoomModel room) {
     if (roomRepository.existsByAddress(room.getAddress())) {
@@ -34,8 +38,12 @@ public class RoomService {
     return roomRepository.save(room);
   }
 
-  public Page<RoomModel> findAll(Pageable pageable, String country, String city) {
-    return roomRepository.findAll(pageable);
+  public RoomModel update(RoomModel room) {
+    return roomRepository.save(room);
+  }
+
+  public Page<RoomModel> findAllByCountryAndCity(Pageable pageable, String country, String city) {
+    return roomRepository.findAllByCountryAndCity(country, city, pageable);
   }
 
   public RoomModel findById(Long id) {
@@ -51,9 +59,10 @@ public class RoomService {
     if (file.isEmpty()) throw new IOException ("File is empty.");
 
     String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-    String filePath = UPLOADDIR + fileName;
+    Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+    String filePath = uploadPath + "/" + fileName;
 
-    File dir = new File(UPLOADDIR);
+    File dir = new File(uploadDir);
 
     if (Boolean.FALSE.equals(dir.exists())) dir.mkdirs();
 
@@ -65,7 +74,7 @@ public class RoomService {
 
   public Resource getPhoto(String photoPath) {
 
-    Path path = Paths.get(UPLOADDIR).resolve(photoPath);
+    Path path = Paths.get(uploadDir).resolve(photoPath);
 
     if (Files.notExists(path)) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 
