@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/HostelProject.iml" filepath="$PROJECT_DIR$/HostelProject.iml" />
       <module fileurl="file://$PROJECT_DIR$/hostel-api/hostel-api.iml" filepath="$PROJECT_DIR$/hostel-api/hostel-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hostel-app.iml" filepath="$PROJECT_DIR$/hostel-app/hostel-app.iml" />
     </modules>
   </component>
 </project>
