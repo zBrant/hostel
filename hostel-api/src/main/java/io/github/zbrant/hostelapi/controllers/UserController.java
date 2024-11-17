@@ -31,10 +31,10 @@ public class UserController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<UserModel> loginUser(@RequestBody @Valid LoginDTO loginDto) {
+  public ResponseEntity<EntityModel<UserModel>> loginUser(@RequestBody @Valid LoginDTO loginDto) {
     UserModel user = facadeService.findUserByEmailAndPassword(loginDto.getEmail(), loginDto.getPassword());
-
-    return ResponseEntity.status(HttpStatus.FOUND).body(user);
+    EntityModel<UserModel> userModel = userModelAssembler.toModel(user);
+    return ResponseEntity.status(HttpStatus.FOUND).body(userModel);
   }
 
   @PostMapping("/logout")

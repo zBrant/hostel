@@ -23,6 +23,6 @@ public class UserRepresentationModelAssembler implements SimpleRepresentationMod
 
   @Override
   public void addLinks(CollectionModel<EntityModel<UserModel>> resources) {
-    resources.add(linkTo(methodOn(UserController.class).registerUser(null)).withSelfRel());
+    resources.add(linkTo(methodOn(UserController.class).registerUser(null)).withRel("register"));
   }
 }

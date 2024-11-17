@@ -18,7 +18,9 @@ public class RoomRepresentationModelAssembler implements SimpleRepresentationMod
   public void addLinks(EntityModel<RoomModel> resource) {
     Long id = Objects.requireNonNull(resource.getContent()).getId();
     resource.add(linkTo(methodOn(RoomController.class).getRoomById(id)).withSelfRel());
+    resource.add(linkTo(methodOn(RoomController.class).updateRoom(id, null)).withRel("update"));
     resource.add(linkTo(methodOn(RoomController.class).deleteRoom(id)).withRel("delete"));
+    resource.add(linkTo(methodOn(RoomController.class).getPhoto(id)).withRel("photo"));
   }
 
   @Override
