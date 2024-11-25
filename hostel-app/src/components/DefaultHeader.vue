@@ -6,16 +6,14 @@
 
     <div class="padding-items">
         <router-link to="/about">
-          <v-icon icon="mdi-account-circle" size="30" class="user-icon"/>
+          <v-icon icon="mdi-account-outline" size="30" class="user-icon"/>
         </router-link>
 
       <v-menu
           transition="slide-y-transition"
       >
         <template v-slot:activator="{ props }">
-            <v-icon
-                v-bind="props"
-                icon="mdi-menu" size="30" class="user-icon"/>
+            <v-icon v-bind="props" icon="mdi-menu" size="30" class="user-icon"/>
         </template>
         <v-list>
           <v-list-item>
@@ -39,17 +37,21 @@ export default {
 
 <style scoped>
 .default-page {
-  margin-top: 10px;
   border-radius: 25px;
   height: 70px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  margin: 0 15% 0;
 }
 
 .user-icon {
   color: black !important;
+}
+
+.user-icon:hover {
+  color: #5a5a5a !important;
 }
 
 .padding-items > *{

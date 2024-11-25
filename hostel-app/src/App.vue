@@ -1,8 +1,8 @@
 <template>
   <div>
-    <default-header></default-header>
-    <router-view/>
-    <default-footer></default-footer>
+    <default-header class="header-default"></default-header>
+    <router-view class="body-height"/>
+    <default-footer class="footer-default"></default-footer>
   </div>
 </template>
 
@@ -18,7 +18,18 @@ import DefaultFooter from '@/components/DefaultFooter.vue'
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin: 0 10% 0;
+}
+
+.header-default {
+  min-height: 10vh;
+}
+
+.footer-default {
+  min-height: 5vh;
+}
+
+.body-height {
+  min-height: 85vh;
 }
 
 nav {
