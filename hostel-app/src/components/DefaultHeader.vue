@@ -5,7 +5,7 @@
       </router-link>
 
     <div class="padding-items">
-        <router-link to="/about">
+        <router-link to="/sign-up">
           <v-icon icon="mdi-account-outline" size="30" class="user-icon"/>
         </router-link>
 
