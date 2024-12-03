@@ -1,6 +1,6 @@
 <template>
   <div class="default-page pl-3 pr-3">
-      <router-link to="/">
+      <router-link to="/home">
         <img alt="Vue logo" style="width: 200px" src="../assets/logo.png">
       </router-link>
 

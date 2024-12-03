@@ -26,8 +26,7 @@ public class UserService {
   private boolean informationMissing(UserModel user) {
     return Objects.isNull(user.getName()) ||
         Objects.isNull(user.getEmail()) ||
-        Objects.isNull(user.getPhoneNumber()) ||
-        Objects.isNull(user.getCpfCnpj());
+        Objects.isNull(user.getPassword());
   }
 
   public UserModel findById(Long id) {
@@ -37,7 +36,7 @@ public class UserService {
 
   public UserModel findByEmailAndPassword(String email, String password) {
     return userRepository.findByEmailAndPassword(email, password)
-        .orElseThrow(() -> new IllegalArgumentException("Credenciais inválidas."));
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Credenciais inválidas."));
   }
 
 }

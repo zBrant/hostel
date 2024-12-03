@@ -22,10 +22,10 @@ public class UserModel implements Serializable {
   @Column(name = "name", nullable = false, length = 100)
   private String name;
 
-  @Column(name = "phone_number", nullable = false, length = 20)
+  @Column(name = "phone_number", length = 20)
   private String phoneNumber;
 
-  @Column(name = "cpf_cnpj", nullable = false, length = 20)
+  @Column(name = "cpf_cnpj", length = 20)
   private String cpfCnpj;
 
   @Column(name = "email", nullable = false, length = 100)

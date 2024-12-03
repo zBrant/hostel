@@ -1,7 +1,6 @@
 <template>
   <div>
     <default-header class="header-default"></default-header>
-    <p>teste novo</p>
     <default-footer class="footer-default"></default-footer>
   </div>
 </template>
@@ -12,7 +11,10 @@ import DefaultFooter from "@/components/DefaultFooter.vue";
 
 export default {
   name: 'HomeView',
-  components: {DefaultFooter, DefaultHeader}
+  components: {DefaultFooter, DefaultHeader},
+  mounted() {
+    console.log(this.$store.state.userInfo)
+  }
 }
 </script>
 

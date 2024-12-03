@@ -2,12 +2,12 @@ import http from "@/services/external-api/http-common";
 
 class AuthenticationService {
 
-    login(id) {
-        return http.get(`/game/${id}`);
+    login(credentials) {
+        return http.post(`/users/login`, credentials, { headers: { 'Content-Type': 'application/json' } });
     }
 
     signup(payload) {
-        return http.post(`/api/v1/user`, payload);
+        return http.post(`/users/register`, payload,  { headers: { 'Content-Type': 'application/json' } });
     }
 }
 

@@ -100,12 +100,24 @@
       </div>
     </div>
     <default-footer class="w-100 text-sm-h6" style="max-height: 40px; min-height: 40px"></default-footer>
+
+    <v-alert
+        v-if="showAlert"
+        class="alert"
+        density="compact"
+        closable
+        :text="errorMessage"
+        color="error"
+        icon="$info"
+        @click:close="showAlert = false"
+    ></v-alert>
   </div>
 </template>
 
 <script>
 import DefaultFooter from "@/components/DefaultFooter.vue";
 import AuthenticationService from "@/services/AuthenticationService";
+import router from "@/router";
 
 export default {
   name: 'signup-view',
@@ -124,18 +136,22 @@ export default {
       password: null,
       rules: [value => { return !!value || 'Campo Obrigatório.' }],
       emailRules: [v => /.+@.+\..+/.test(v) || 'Endereço de email inválido'],
+      errorMessage: '',
+      showAlert: false,
     }
   },
   methods: {
     async sendData() {
       if (!this.valid)  return
 
-      AuthenticationService.signup(this.mountPayload)
+      AuthenticationService.signup(this.mountPayload())
           .then(response => {
-            console.log('response sign-up', response);
+            this.$store.state.userInfo = response.data
+            router.push({ path: '/home' })
           })
           .catch(e => {
-            console.log(e);
+            this.errorMessage = e.response.data.message
+            this.showAlert = true
           });
     },
     mountPayload(){

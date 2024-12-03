@@ -1,9 +1,9 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import DefaultView from "@/views/pages/DefaultView.vue";
+import DefaultView from "@/views/pages/HomeView.vue";
 
 const routes = [
   {
-    path: '/',
+    path: '/home',
     name: 'home',
     component: DefaultView,
   },
