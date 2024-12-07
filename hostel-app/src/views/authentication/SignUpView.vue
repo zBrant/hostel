@@ -152,6 +152,10 @@ export default {
           .catch(e => {
             this.errorMessage = e.response.data.message
             this.showAlert = true
+
+            setTimeout(() => {
+              this.showAlert = false
+            }, 3000)
           });
     },
     mountPayload(){

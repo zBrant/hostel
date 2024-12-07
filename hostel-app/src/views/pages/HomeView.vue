@@ -31,6 +31,7 @@
               <div class="room-description">
                 <h3>{{ room.title }}</h3>
                 <p>{{ room.location}}</p>
+                <p class="room-price mt-1">R$ {{ room.price}}</p>
               </div>
             </li>
           </template>
@@ -44,6 +45,36 @@
         ></v-pagination>
       </div>
     </div>
+
+    <div class="div-newsletter bg-cyan-darken-1 d-flex align-center justify-center">
+      <div class="div-newsletter-texts">
+        <h3 class="text-left div-newsletter-texts-title">Junta-te à nossa newsletter aventureira!</h3>
+        <p class="text-left">Assina a nossa newsletter para ofertas, inpsirações e outras promoções de viagens!</p>
+      </div>
+      <div class="div-newsletter-email">
+        <v-text-field
+            prepend-inner-icon="mdi-email"
+            append-inner-icon="mdi-send-variant"
+            placeholder="O teu endereço de email"
+            :rounded="true"
+            variant="solo"
+            v-model="emailNewsletter"
+            type="email"
+            @click:append-inner="sendEmailToSubscribe"
+        ></v-text-field>
+      </div>
+    </div>
+
+    <v-alert
+        v-if="showEmailSended"
+        class="alert"
+        density="compact"
+        closable
+        :text="messageEmailSended"
+        type="success"
+        @click:close="showEmailSended = false"
+    ></v-alert>
+
     <default-footer class="footer-default"></default-footer>
   </div>
 </template>
@@ -57,17 +88,20 @@ export default {
   components: {DefaultFooter, DefaultHeader},
   data(){
     return {
+      emailNewsletter: '',
+      messageEmailSended: 'email inscrito com sucesso.',
+      showEmailSended: false,
       rooms: [
-        { title: 'Quarto com vista para o mar', location: 'Sevilha, Espanha' },
-        { title: 'Quarto no centro da cidade', location: 'Lisboa, Portugal' },
-        { title: 'Suíte aconchegante', location: 'Paris, França' },
-        { title: 'Quarto com varanda', location: 'Rio de Janeiro, Brasil' },
-        { title: 'Loft moderno', location: 'Berlim, Alemanha' },
-        { title: 'Apartamento espaçoso', location: 'Barcelona, Espanha' },
-        { title: 'Estúdio compacto', location: 'Tóquio, Japão' },
-        { title: 'Chalé nas montanhas', location: 'Genebra, Suíça' },
-        { title: 'Quarto com vista para o lago', location: 'Toronto, Canadá' },
-        { title: 'Cobertura de luxo', location: 'Nova York, EUA' }
+        { title: 'Quarto com vista para o mar', location: 'Sevilha, Espanha', price: 23.8 },
+        { title: 'Quarto no centro da cidade', location: 'Lisboa, Portugal', price: 23.8 },
+        { title: 'Suíte aconchegante', location: 'Paris, França', price: 23.8 },
+        { title: 'Quarto com varanda', location: 'Rio de Janeiro, Brasil', price: 23.8 },
+        { title: 'Loft moderno', location: 'Berlim, Alemanha', price: 23.8 },
+        { title: 'Apartamento espaçoso', location: 'Barcelona, Espanha', price: 23.8 },
+        { title: 'Estúdio compacto', location: 'Tóquio, Japão', price: 23.8 },
+        { title: 'Chalé nas montanhas', location: 'Genebra, Suíça', price: 23.8 },
+        { title: 'Quarto com vista para o lago', location: 'Toronto, Canadá', price: 23.8 },
+        { title: 'Cobertura de luxo', location: 'Nova York, EUA', price: 215.7}
       ],
       currentPage: 1,
       itemsPerPage: 4
@@ -86,6 +120,15 @@ export default {
   methods: {
     selectRoom(room){
       console.log('selecionu quarto', room)
+    },
+    sendEmailToSubscribe() {
+      this.emailNewsletter = ''
+      this.showEmailSended = true
+
+      setTimeout(() => {
+        this.showEmailSended = false
+      }, 3000)
+
     }
   }
 }
@@ -93,11 +136,11 @@ export default {
 
 <style scoped>
 .header-default {
-  min-height: 10vh;
+  height: 10vh;
 }
 
 .footer-default {
-  min-height: 5vh;
+  height: 5vh;
 }
 
 .body-height {
@@ -138,9 +181,42 @@ nav a.router-link-exact-active {
   margin-bottom: 20px;
 }
 
+.room-price {
+  color: rgb(18, 20, 23);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: -0.00625rem;
+  line-height: 1.5rem;
+  order: 1;
+}
+
+.alert {
+  position: fixed;
+  right: 30px;
+  top: 30px;
+}
+
 .room-description{
   color: black;
   padding: 15px 10px;
+}
+
+.div-newsletter {
+  max-height: 140px ;
+}
+
+.div-newsletter-texts {
+  padding: 60px;
+  color: #121b35;
+}
+
+.div-newsletter-texts-title {
+  font-size: 1.8rem;
+}
+
+.div-newsletter-email {
+  width: 760px;
 }
 
 .hero-search {
@@ -161,6 +237,7 @@ nav a.router-link-exact-active {
   border-radius: 30px;
   list-style-type: none;
   cursor: pointer;
+  width: 307px;
 }
 
 .hero {

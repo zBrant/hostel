@@ -22,12 +22,12 @@ export default {
 .diagonal-background::before {
   content: '';
   position: absolute;
-  top: -50px;
+
   left: 0;
   width: 100%;
-  height: calc(100% + 50px);
-  background-color: #121417;
-  clip-path: polygon(0 50px, 100% 0, 100% 100%, 0 100%);
-  z-index: -1;
+}
+
+.text-white {
+  position: relative;
 }
 </style>
