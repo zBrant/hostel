@@ -6,19 +6,73 @@
           <div class="titulo">
             <h1>Registrar quarto</h1>
           </div>
-          <v-form v-model="valid">
+          <v-form v-model="valid" ref="form">
             <v-container>
               <v-row>
-                <v-col cols="12" md="12">
+                <v-col cols="12" md="4">
                   <v-text-field
-                      prepend-inner-icon="mdi-map-marker"
                       base-color="transparent"
                       color="#6d618e"
                       bg-color="#3c364c"
                       variant="outlined"
-                      v-model="address"
+                      v-model="address.cep"
                       :rules="rules"
-                      placeholder="Endereço"
+                      placeholder="CEP"
+                      type="text"
+                      required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="4">
+                  <v-text-field
+                      base-color="transparent"
+                      color="#6d618e"
+                      bg-color="#3c364c"
+                      variant="outlined"
+                      v-model="address.state"
+                      :rules="rules"
+                      placeholder="Estado"
+                      type="text"
+                      required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="4">
+                  <v-text-field
+                      base-color="transparent"
+                      color="#6d618e"
+                      bg-color="#3c364c"
+                      variant="outlined"
+                      v-model="address.number"
+                      :rules="rules"
+                      placeholder="Número"
+                      type="number"
+                      required
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                      base-color="transparent"
+                      color="#6d618e"
+                      bg-color="#3c364c"
+                      variant="outlined"
+                      v-model="address.country"
+                      :rules="rules"
+                      placeholder="País"
+                      type="text"
+                      required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                      base-color="transparent"
+                      color="#6d618e"
+                      bg-color="#3c364c"
+                      variant="outlined"
+                      v-model="address.city"
+                      :rules="rules"
+                      placeholder="Cidade"
                       type="text"
                       required
                   ></v-text-field>
@@ -28,7 +82,6 @@
               <v-row>
                 <v-col cols="12" md="12">
                   <v-text-field
-                      prepend-inner-icon="mdi-text"
                       base-color="transparent"
                       color="#6d618e"
                       bg-color="#3c364c"
@@ -45,7 +98,6 @@
               <v-row>
                 <v-col cols="12" md="6">
                   <v-text-field
-                      prepend-inner-icon="mdi-bed"
                       base-color="transparent"
                       color="#6d618e"
                       bg-color="#3c364c"
@@ -61,7 +113,6 @@
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-text-field
-                      prepend-inner-icon="mdi-currency-usd"
                       base-color="transparent"
                       color="#6d618e"
                       bg-color="#3c364c"
@@ -84,11 +135,12 @@
                       bg-color="#3c364c"
                       variant="outlined"
                       accept="image/*"
-                      label="selecionar foto do quarto"
+                      v-model="photo"
+                      label="Foto do quarto"
                   ></v-file-input>
                 </v-col>
               </v-row>
-              <v-btn class="mt-5" @click="doLogin" type="submit" elevation="4" block height="45" color="#6e54b5">Registrar</v-btn>
+              <v-btn class="mt-5" @click="sendRoom" type="submit" elevation="4" block height="45" color="#6e54b5">Registrar</v-btn>
             </v-container>
           </v-form>
         </div>
@@ -111,7 +163,8 @@
 <script>
 import DefaultHeader from "@/components/DefaultHeader.vue";
 import DefaultFooter from "@/components/DefaultFooter.vue";
-import AuthenticationService from "@/services/AuthenticationService";
+import RoomService from "@/services/RoomService";
+import { ref } from "vue";
 import router from "@/router";
 
 export default {
@@ -129,35 +182,56 @@ export default {
       showAlert: false,
 
       description: '',
+      photo: ref(null),
       price: '',
       bedCount: '',
-      rented: '',
-      userId: '',
-      address: '',
+      address: {
+        cep: null,
+        city: null,
+        country: null,
+        number: null,
+        state: null,
+      },
     }
   },
   methods: {
-    doLogin(){
+    async sendRoom(){
       if (!this.valid)  return
 
-      AuthenticationService.login(this.mountPayload())
-          .then(response => {
-            this.$store.state.userInfo = response.data
-            router.push({ path: '/home' })
-          })
-          .catch(e => {
-            this.errorMessage = e.response.data.message
-            this.showAlert = true
-
-            setTimeout(() => {
-              this.showAlert = false
-            }, 3000)
-          });
+      await this.sendInfo()
     },
-    mountPayload(){
+    async sendInfo(){
+      RoomService.sendRoom(this.mountPayloadInfo())
+          .then(response => this.sendPhoto(response.data.id))
+          .catch(e => this.alertHandler(e))
+    },
+    async sendPhoto(roomId){
+      RoomService.sendPhoto(this.mountPayloadPhoto(roomId))
+          .then(() => router.push({ path: '/home' }))
+          .catch(e => this.alertHandler(e))
+    },
+    alertHandler(e){
+      this.errorMessage = e.response.data.message
+      this.showAlert = true
+
+      setTimeout(() => {
+        this.showAlert = false
+      }, 1000)
+    },
+    mountPayloadInfo(){
       return {
-        email: this.email,
-        password: this.password,
+        description: this.description,
+        price: this.price,
+        bedCount: this.bedCount,
+        rented: false,
+        address: this.address,
+        userId: this.$store.state.userInfo.id
+      }
+    },
+    mountPayloadPhoto(roomId){
+      return {
+        photo: this.photo,
+        userId: roomId,
       }
     }
   }

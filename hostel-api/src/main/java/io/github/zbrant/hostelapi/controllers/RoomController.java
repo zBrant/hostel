@@ -82,7 +82,7 @@ public class RoomController {
   @Transactional
   @PostMapping("/{id}/photo")
   public ResponseEntity<String> uploadRoomPhoto(@PathVariable("id") Long roomId,
-                                                @RequestParam("photo") MultipartFile photo) {
+                                                @RequestPart("photo") MultipartFile photo) {
     try {
       RoomModel room = facadeService.findRoomById(roomId);
       if (Objects.isNull(room)) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Room not found.");

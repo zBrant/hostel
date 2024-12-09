@@ -18,6 +18,9 @@
             placeholder="Onde você quer ir?"
             :rounded="true"
             variant="solo"
+            v-model="filter"
+            append-inner-icon="mdi-search-web"
+            @click:append-inner="searchWithFilter"
         ></v-text-field>
       </div>
 
@@ -27,11 +30,13 @@
         <ul class="rooms-cards d-flex flex-wrap ">
           <template v-for="(room, index) in paginatedRooms" :key="index">
             <li class="rooms-card ma-2" @click="selectRoom(room)" >
-              <div class="room-image"></div>
+
+              <div :style="imageStyle" class="room-image"></div>
+
               <div class="room-description">
-                <h3>{{ room.title }}</h3>
-                <p>{{ room.location}}</p>
-                <p class="room-price mt-1">R$ {{ room.price}}</p>
+                <h3>{{ room.description }}</h3>
+                <p>{{ room.address.city}}</p>
+                <p class="room-price mt-1">R$ {{ room.price }}</p>
               </div>
             </li>
           </template>
@@ -82,6 +87,7 @@
 <script>
 import DefaultHeader from "@/components/DefaultHeader.vue";
 import DefaultFooter from "@/components/DefaultFooter.vue";
+import RoomService from "@/services/RoomService";
 
 export default {
   name: 'HomeView',
@@ -91,23 +97,19 @@ export default {
       emailNewsletter: '',
       messageEmailSended: 'email inscrito com sucesso.',
       showEmailSended: false,
-      rooms: [
-        { title: 'Quarto com vista para o mar', location: 'Sevilha, Espanha', price: 23.8 },
-        { title: 'Quarto no centro da cidade', location: 'Lisboa, Portugal', price: 23.8 },
-        { title: 'Suíte aconchegante', location: 'Paris, França', price: 23.8 },
-        { title: 'Quarto com varanda', location: 'Rio de Janeiro, Brasil', price: 23.8 },
-        { title: 'Loft moderno', location: 'Berlim, Alemanha', price: 23.8 },
-        { title: 'Apartamento espaçoso', location: 'Barcelona, Espanha', price: 23.8 },
-        { title: 'Estúdio compacto', location: 'Tóquio, Japão', price: 23.8 },
-        { title: 'Chalé nas montanhas', location: 'Genebra, Suíça', price: 23.8 },
-        { title: 'Quarto com vista para o lago', location: 'Toronto, Canadá', price: 23.8 },
-        { title: 'Cobertura de luxo', location: 'Nova York, EUA', price: 215.7}
-      ],
+      rooms: [],
+      imageUrl: [],
       currentPage: 1,
-      itemsPerPage: 4
+      itemsPerPage: 4,
+      filter: '',
     }
   },
   computed: {
+    imageStyle() {
+      return {
+        backgroundImage: `url(${this.imageUrl})`,
+      }
+    },
     paginatedRooms() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = this.currentPage * this.itemsPerPage;
@@ -117,7 +119,43 @@ export default {
       return Math.ceil(this.rooms.length / this.itemsPerPage);
     }
   },
+  async mounted() {
+    await this.getAllRooms()
+  },
   methods: {
+    searchWithFilter(){
+      console.log('buscou')
+    },
+    async getAllRooms(){
+      RoomService.getAll(this.mountPayloadSearch())
+          .then(response => this.addRoomsToList(response.data._embedded.roomModelList))
+          .catch(e => this.alertHandler(e))
+    },
+    addRoomsToList(data){
+      this.rooms = data
+      this.imageUrl = this.getRoomImages()
+    },
+    getRoomImages(){
+      let images = []
+
+      RoomService.getAll(this.mountPayloadSearch())
+          .then(response => images = this.addRoomsImages(response.data))
+          .catch(e => this.alertHandler(e))
+
+      return images
+    },
+    addRoomsImages(images){
+      // buscar images dos quartos
+      console.log(images)
+      return []
+    },
+    mountPayloadSearch(){
+      return {
+        filter: this.filter,
+        currentPage: this.currentPage,
+        itemsPerPage: this.itemsPerPage,
+      }
+    },
     selectRoom(room){
       console.log('selecionu quarto', room)
     },
@@ -129,7 +167,15 @@ export default {
         this.showEmailSended = false
       }, 3000)
 
-    }
+    },
+    alertHandler(e){
+      this.errorMessage = e.response.data.message
+      this.showAlert = true
+
+      setTimeout(() => {
+        this.showAlert = false
+      }, 1000)
+    },
   }
 }
 </script>
