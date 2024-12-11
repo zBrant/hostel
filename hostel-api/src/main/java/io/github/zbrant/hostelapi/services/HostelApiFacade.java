@@ -26,6 +26,7 @@ public class HostelApiFacade {
   public RoomModel saveRoomWithOwner(RoomModel room, Long userId) {
     UserModel user = userService.findById(userId);
     validateMaxRoomsByUser(user);
+    validateUserHasAllCredentials(user);
 
     AddressModel address = findOrSaveAddress(room.getAddress());
     room.setAddress(address);
@@ -42,9 +43,15 @@ public class HostelApiFacade {
     return savedRoom;
   }
 
+  private void validateUserHasAllCredentials(UserModel user) {
+    if (Objects.isNull(user.getCpfCnpj()) || Objects.isNull(user.getPhoneNumber())){
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Complete o cadastro para registrar um quarto.");
+    }
+  }
+
   private static void validateMaxRoomsByUser(UserModel user) {
     if (user.getRoomUsers().size() == MAXUSERROOMS)
-      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Numero maximo de cadastro de quartos permitido atingido");
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Numero maximo de cadastro de quartos permitido atingido.");
   }
 
   public RoomModel updateRoom(RoomModel room) {

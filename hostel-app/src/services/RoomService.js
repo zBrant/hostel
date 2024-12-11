@@ -13,11 +13,17 @@ class RoomService {
     }
 
     getAll({ filter, currentPage, itemsPerPage }){
-        let params = `?page=${currentPage}&size=${itemsPerPage}`
+        let params = `?page=${currentPage-1}&size=${itemsPerPage}`
 
         if (filter) params += `&city=${filter}`
 
         return http.get(`/rooms${params}`);
+    }
+
+    getImage(id) {
+        return http.get(`/rooms/photo/${id}`, {
+            responseType: 'blob',
+        })
     }
 }
 

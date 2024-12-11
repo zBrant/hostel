@@ -7,12 +7,12 @@
     <div class="padding-items d-flex text-black">
 
 
+      <router-link to="/register-room" class="text-decoration-none">
         <div class="mr-10 border-registrer-property align-self-center pt-1 pb-1" v-if="logedUser">
-          <router-link to="/register-room" class="text-decoration-none">
             <v-icon icon="mdi-office-building mr-1" size="20" />
             <span>Resgistre sua propriedade</span>
-          </router-link>
         </div>
+      </router-link>
 
       <router-link to="/sign-up">
         <v-icon icon="mdi-account-outline" size="30" class="user-icon"/>

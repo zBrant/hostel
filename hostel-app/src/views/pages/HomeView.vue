@@ -27,22 +27,38 @@
       <div class="rooms-div">
         <p class="rooms-div-text ml-2">Descubra ofertas imperdíveis nos melhores hostels do mundo.</p>
 
-        <ul class="rooms-cards d-flex flex-wrap ">
+        <ul class="rooms-cards d-flex flex-wrap" >
           <template v-for="(room, index) in paginatedRooms" :key="index">
-            <li class="rooms-card ma-2" @click="selectRoom(room)" >
+            <li class="rooms-card ma-2" @click="selectRoom(room)">
+              <div class="room-image">
+                <v-img
+                    height="200"
+                    width="200"
+                    cover
+                    aspect-ratio="16/9"
 
-              <div :style="imageStyle" class="room-image"></div>
+                    :src="getImage(room.id)"
+                ></v-img>
+              </div>
 
               <div class="room-description">
                 <h3>{{ room.description }}</h3>
-                <p>{{ room.address.city}}</p>
+                <p>{{ room.address.city }}</p>
                 <p class="room-price mt-1">R$ {{ room.price }}</p>
               </div>
             </li>
           </template>
         </ul>
 
+        <div class="empty-list d-flex flex-column" v-if="rooms.length <= 0">
+          <v-icon aria-hidden="false" size="100px">
+            mdi-cup-outline
+          </v-icon>
+          <p>Listagem vazia</p>
+        </div>
+
         <v-pagination
+            v-else
             v-model="currentPage"
             :length="totalPages"
             :total-visible="5"
@@ -98,18 +114,13 @@ export default {
       messageEmailSended: 'email inscrito com sucesso.',
       showEmailSended: false,
       rooms: [],
-      imageUrl: [],
+      imageUrls: [],
       currentPage: 1,
       itemsPerPage: 4,
       filter: '',
     }
   },
   computed: {
-    imageStyle() {
-      return {
-        backgroundImage: `url(${this.imageUrl})`,
-      }
-    },
     paginatedRooms() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = this.currentPage * this.itemsPerPage;
@@ -123,8 +134,8 @@ export default {
     await this.getAllRooms()
   },
   methods: {
-    searchWithFilter(){
-      console.log('buscou')
+    async searchWithFilter(){
+      await this.getAllRooms({ filter: this.filter })
     },
     async getAllRooms(){
       RoomService.getAll(this.mountPayloadSearch())
@@ -133,21 +144,13 @@ export default {
     },
     addRoomsToList(data){
       this.rooms = data
-      this.imageUrl = this.getRoomImages()
     },
-    getRoomImages(){
-      let images = []
-
-      RoomService.getAll(this.mountPayloadSearch())
-          .then(response => images = this.addRoomsImages(response.data))
+    async getImage(roomId) {
+      const image = await RoomService.getImage(roomId)
+          .then(response => response)
           .catch(e => this.alertHandler(e))
 
-      return images
-    },
-    addRoomsImages(images){
-      // buscar images dos quartos
-      console.log(images)
-      return []
+      return image
     },
     mountPayloadSearch(){
       return {
@@ -163,18 +166,17 @@ export default {
       this.emailNewsletter = ''
       this.showEmailSended = true
 
-      setTimeout(() => {
-        this.showEmailSended = false
-      }, 3000)
+      setTimeout(() => this.showEmailSended = false , 3000)
 
     },
     alertHandler(e){
+      if (!e.data) return
       this.errorMessage = e.response.data.message
       this.showAlert = true
 
       setTimeout(() => {
         this.showAlert = false
-      }, 1000)
+      }, 2000)
     },
   }
 }
@@ -189,10 +191,6 @@ export default {
   height: 5vh;
 }
 
-.body-height {
-  min-height: 85vh;
-}
-
 nav {
   padding: 30px;
 }
@@ -204,6 +202,12 @@ nav a {
 
 nav a.router-link-exact-active {
   color: #42b983;
+}
+
+.empty-list {
+  justify-content: center !important;
+  align-content: center !important;
+  flex-wrap: wrap;
 }
 
 .body {
