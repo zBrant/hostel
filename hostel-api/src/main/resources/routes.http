@@ -1,0 +1,182 @@
+########################
+### ENDPOINTS DO USER
+########################
+
+### criar usuario
+POST /api/v1/users/register HTTP/1.1
+Content-Type: application/json
+User-Agent: insomnia/10.1.0
+Host: localhost:8080
+Content-Length: 146
+
+{
+  "name": "John Doe",
+  "phoneNumber": "1234567890",
+  "cpfCnpj": "12345678901",
+  "email": "johndoe@example.com",
+  "password": "password123"
+}
+
+####################
+### criar usuario 2
+POST /api/v1/users/register HTTP/1.1
+Content-Type: application/json
+User-Agent: insomnia/10.1.0
+Host: localhost:8080
+Content-Length: 149
+
+{
+  "name": "Eric Marston",
+  "phoneNumber": "2222333344",
+  "cpfCnpj": "90539087068",
+  "email": "eric11@example.com",
+  "password": "123password"
+}
+
+####################
+### faz login
+POST /api/v1/users/login HTTP/1.1
+Content-Type: application/json
+User-Agent: insomnia/10.1.0
+Host: localhost:8080
+Content-Length: 70
+
+{
+  "email": "jane.updated@example.com",
+  "password": "newpassword"
+}
+
+####################
+### faz logout
+POST /api/v1/users/logout HTTP/1.1
+User-Agent: insomnia/10.1.0
+Host: localhost:8080
+
+####################
+### atualiza informações do usuario
+PUT /api/v1/users/update HTTP/1.1
+Content-Type: application/json
+User-Agent: insomnia/10.1.0
+Host: localhost:8080
+Content-Length: 170
+
+{
+  "id": 1,
+  "name": "Jane Doe Updated",
+  "phoneNumber": "5544332211",
+  "cpfCnpj": "10987654321",
+  "email": "jane.updated@example.com",
+  "password": "newpassword"
+}
+
+########################
+### ENDPOINTS DO ROOM
+########################
+
+### adiciona um quarto
+POST /api/v1/rooms HTTP/1.1
+Content-Type: application/json
+User-Agent: insomnia/10.1.0
+Host: localhost:8080
+Content-Length: 258
+
+{
+  "description": "Room with a beautiful view",
+  "price": "120.00",
+  "bedCount": 2,
+  "rented": false,
+  "address": {
+    "city": "Rio de Janeiro",
+    "state": "RJ",
+    "cep": "22290-050",
+    "country": "Brazil",
+    "number": 101
+  },
+  "userId": 1
+}
+
+####################
+### adiciona outro quarto
+POST /api/v1/rooms HTTP/1.1
+Content-Type: application/json
+User-Agent: insomnia/10.1.0
+Host: localhost:8080
+Content-Length: 238
+
+{
+"description": "Room test 2",
+"price": "1380.00",
+"bedCount": 2,
+"rented": false,
+"address": {
+"city": "São Paulo",
+"state": "SP",
+"cep": "23234-234",
+"country": "Brazil",
+"number": 133
+},
+"userId": 1
+}
+
+####################
+### busca quarto com id 1
+GET /api/v1/rooms/1 HTTP/1.1
+User-Agent: insomnia/10.1.0
+Host: localhost:8080
+
+####################
+### busca quarto com id 2
+PUT /api/v1/rooms/2 HTTP/1.1
+Content-Type: application/json
+User-Agent: insomnia/10.1.0
+Host: localhost:8080
+Content-Length: 260
+
+{
+  "description": "Updated room description",
+  "price": "150.00",
+  "bedCount": 3,
+  "rented": false,
+  "address": {
+    "id": 2,
+    "city": "São Paulo",
+    "state": "SP",
+    "CEP": "04567-000",
+    "country": "Brazil",
+    "number": 202
+  },
+  "userId": 1
+}
+
+####################
+### busca todos os quartos com filtro
+GET /api/v1/rooms?country=Brazil&page=0&size=10 HTTP/1.1
+User-Agent: insomnia/10.1.0
+Host: localhost:8080
+
+####################
+### deletar quarto 2
+DELETE /api/v1/rooms/2 HTTP/1.1
+User-Agent: insomnia/10.1.0
+Host: localhost:8080
+
+####################
+### envia foto do quarto
+### ajustar para enviar foto desejada
+POST /api/v1/rooms/1/photo HTTP/1.1
+Content-Type: multipart/form-data; boundary=---011000010111000001101001
+User-Agent: insomnia/10.1.1
+Host: localhost:8080
+Content-Length: 168
+
+-----011000010111000001101001
+Content-Disposition: form-data; name="photo"; filename="codificador.jpg"
+Content-Type: image/jpeg
+
+-----011000010111000001101001--
+
+####################
+### busca foto do quarto 1
+GET /api/v1/rooms/photo/1 HTTP/1.1
+User-Agent: insomnia/10.1.1
+Host: localhost:8080

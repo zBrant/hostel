@@ -34,7 +34,7 @@ public class UserController {
   public ResponseEntity<EntityModel<UserModel>> loginUser(@RequestBody @Valid LoginDTO loginDto) {
     UserModel user = facadeService.findUserByEmailAndPassword(loginDto.getEmail(), loginDto.getPassword());
     EntityModel<UserModel> userModel = userModelAssembler.toModel(user);
-    return ResponseEntity.status(HttpStatus.FOUND).body(userModel);
+    return ResponseEntity.status(HttpStatus.OK).body(userModel);
   }
 
   @PostMapping("/logout")
