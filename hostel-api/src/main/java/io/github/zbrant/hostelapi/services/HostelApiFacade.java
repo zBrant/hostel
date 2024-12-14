@@ -52,6 +52,7 @@ public class HostelApiFacade {
   private static void validateMaxRoomsByUser(UserModel user) {
     if (user.getRoomUsers().size() == MAXUSERROOMS)
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Numero maximo de cadastro de quartos permitido atingido.");
+
   }
 
   public RoomModel updateRoom(RoomModel room) {
